@@ -1,10 +1,10 @@
 # Aurora Array
 
-Aurora Array is an original, clean-room slot-mathematics portfolio project. It combines a playable 5×3 game, a shared outcome engine, exact theoretical analysis, deterministic Monte Carlo verification, automated tests, and a concise mathematical case study.
+Aurora Array is an original slot math portfolio project. It combines a playable 5×3 game, a shared outcome engine, exact theoretical analysis, deterministic Monte Carlo verification, automated tests, and a concise mathematical case study.
 
 ## Portfolio intent
 
-The project demonstrates the full quantitative-development loop:
+This project demonstrates the full quantitative-development loop:
 
 1. Translate a compact rule set into an explicit mathematical model.
 2. Construct reel strips and a paytable against a target return profile.
@@ -35,8 +35,6 @@ The project demonstrates the full quantitative-development loop:
 | Feature odds | 1 in 12.6706 |
 | Single-line hit probability | 4.595313% |
 
-The unusually high share of return in the feature is intentional: it makes the relationship between trigger frequency, awarded trials, multiplier, and total expectation easy to inspect in a compact demonstration model. It is a portfolio teaching choice, not a recommendation for a production game.
-
 ## Verification
 
 The exact model enumerates the 102,400,000 weighted five-reel symbol combinations for a single payline in compressed frequency form. Scatter-window distributions are calculated per reel and convolved to obtain exact feature probability. A fixed-seed Monte Carlo runner then exercises complete base and feature rounds through the same engine used by the playable interface.
@@ -45,11 +43,10 @@ Run the tests with `npm test` and create a deployment build with `npm run build`
 
 ## Repository map
 
-- `lib/gameMath.js` — strips, paytable, rules, outcome evaluation, exact analysis, and simulation
-- `app/GamePortfolio.tsx` — interactive portfolio presentation
-- `tests/gameMath.test.mjs` — strip, substitution, expectation, and simulation checks
-- `docs/math-specification.md` — model assumptions and derivation
-- `docs/portfolio-case-study.md` — hiring-manager-oriented project narrative
+- `lib/gameMath.js` strips, paytable, rules, outcome evaluation, exact analysis, and simulation
+- `app/GamePortfolio.tsx` interactive portfolio presentation
+- `tests/gameMath.test.mjs` strip, substitution, expectation, and simulation checks
+- `docs/math-specification.md` model assumptions and derivation
 
 ## Independence statement
 
