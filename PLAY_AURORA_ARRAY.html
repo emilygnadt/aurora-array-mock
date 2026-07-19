@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Aurora Array</title>
+  <style>
+    body { max-width: 800px; margin: 30px auto; padding: 0 15px; font-family: Arial, sans-serif; color: #222; }
+    h1 { font-size: 26px; margin-bottom: 5px; }
+    h2 { font-size: 18px; margin-top: 28px; }
+    p, li { line-height: 1.45; }
+    .stats { border-top: 1px solid #bbb; border-bottom: 1px solid #bbb; padding: 10px 0; margin: 20px 0; }
+    .screen { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; padding: 6px; background: #444; }
+    .reel { display: grid; gap: 4px; }
+    .symbol { height: 90px; background: #fff; border: 1px solid #aaa; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .symbol b { font-size: 25px; }
+    .symbol small { margin-top: 4px; color: #666; }
+    .wild { background: #e9f3ce; }
+    .scatter { background: #e4e8f5; }
+    .winner { outline: 3px solid green; outline-offset: -3px; }
+    .spinning { opacity: .55; }
+    .result { min-height: 42px; display: flex; justify-content: space-between; align-items: center; }
+    button { padding: 10px 30px; font-size: 16px; cursor: pointer; }
+    .controls { text-align: center; padding: 12px; background: #eee; border: 1px solid #ccc; }
+    .small { color: #666; font-size: 12px; }
+    @media (max-width: 550px) { .symbol { height: 65px; } .symbol b { font-size: 18px; } .symbol small { font-size: 9px; } }
+  </style>
+</head>
+<body>
+  <h1>Aurora Array</h1>
+  <p>A simple 5-reel slot math demo.</p>
+
+  <p class="stats"><strong>RTP:</strong> 95.928856% &nbsp; | &nbsp; <strong>Bet:</strong> 1.00 &nbsp; | &nbsp; <strong>Lines:</strong> 10</p>
+
+  <div class="screen" id="screen" aria-label="Five reel slot window"></div>
+  <div class="result" aria-live="polite"><span id="message">Click Spin to play.</span><strong id="win">Win: 0.00</strong></div>
+  <div class="controls"><button id="spin">Spin</button></div>
+
+  <h2>Rules</h2>
+  <ul>
+    <li>Wins pay left to right on 10 fixed lines.</li>
+    <li>Wild substitutes for regular symbols.</li>
+    <li>Three or more Signals award 9 free spins.</li>
+    <li>Free-spin wins pay 2×.</li>
+  </ul>
+
+  <p class="small">Offline portfolio demo only. No real money or saved data. All code, reel strips, and game parameters are original.</p>
+
+  <script>
+    const names={A:['AU','Aurora',''],O:['OR','Orbit',''],C:['CO','Comet',''],L:['LU','Luna',''],R:['CR','Crystal',''],N:['NO','Nova',''],P:['PU','Pulse',''],W:['W','Wild','wild'],S:['S','Signal','scatter']};
+    const pays={A:{3:20,4:80,5:300},O:{3:15,4:50,5:200},C:{3:10,4:30,5:120},L:{3:8,4:20,5:80},R:{3:5,4:15,5:50},N:{3:4,4:10,5:30},P:{3:3,4:6,5:23},W:{3:50,4:200,5:1000}};
+    const lines=[[1,1,1,1,1],[0,0,0,0,0],[2,2,2,2,2],[0,1,2,1,0],[2,1,0,1,2],[0,0,1,2,2],[2,2,1,0,0],[1,0,0,0,1],[1,2,2,2,1],[0,1,0,1,0]];
+    const strips=[
+      'S,P,L,P,N,P,N,L,R,P,L,W,A,S,C,O,N,R,O,L,R,P,W,R,N,C,N,S,P,R,C,P,R,P,C,N,L,O,N,A',
+      'S,N,R,P,R,O,P,C,L,W,R,N,R,S,N,R,N,P,C,N,P,A,C,L,P,L,W,S,O,A,L,N,L,P,C,N,P,R,P,O',
+      'S,N,O,C,P,N,C,L,P,O,A,C,P,S,N,R,N,W,L,A,N,R,P,C,R,P,R,S,R,L,O,L,P,L,P,N,P,N,W,R',
+      'S,N,L,C,R,L,C,R,N,O,R,P,W,S,P,C,A,N,P,O,P,N,L,C,R,N,P,S,R,W,L,N,P,N,O,R,P,L,A,P',
+      'S,O,R,N,P,N,L,C,L,R,O,C,R,S,L,N,L,P,C,N,W,P,L,P,A,P,R,S,P,R,P,C,N,W,N,R,A,O,P,N'
+    ].map(x=>x.split(','));
+    const screen=document.getElementById('screen'),message=document.getElementById('message'),win=document.getElementById('win'),button=document.getElementById('spin');
+    function makeWindow(stops){return strips.map((strip,r)=>[0,1,2].map(row=>strip[(stops[r]+row)%strip.length]))}
+    function randomWindow(){return makeWindow(strips.map(strip=>Math.floor(Math.random()*strip.length)))}
+    function linePay(symbols){let best=0;for(const target in pays){let count=0;for(const symbol of symbols){if(symbol===target||symbol==='W')count++;else break}if(count>=3)best=Math.max(best,pays[target][count]||0)}return best}
+    function evaluate(window,multiplier=1){let payout=0,winners=[];lines.forEach((line,i)=>{const amount=linePay(line.map((row,reel)=>window[reel][row]))*.1*multiplier;if(amount>0){payout+=amount;winners.push(i)}});return{payout,winners,trigger:window.flat().filter(x=>x==='S').length>=3}}
+    function render(window,winners=[]){screen.innerHTML='';window.forEach((reel,r)=>{const reelNode=document.createElement('div');reelNode.className='reel';reel.forEach((symbol,row)=>{const data=names[symbol],active=winners.some(i=>lines[i][r]===row),tile=document.createElement('div');tile.className='symbol '+data[2]+(active?' winner':'');tile.innerHTML='<b>'+data[0]+'</b><small>'+data[1]+'</small>';reelNode.appendChild(tile)});screen.appendChild(reelNode)})}
+    button.addEventListener('click',()=>{button.disabled=true;screen.classList.add('spinning');message.textContent='Spinning...';setTimeout(()=>{const current=randomWindow(),base=evaluate(current);let total=base.payout;if(base.trigger)for(let i=0;i<9;i++)total+=evaluate(randomWindow(),2).payout;render(current,base.winners);screen.classList.remove('spinning');win.textContent='Win: '+total.toFixed(2);message.textContent=base.trigger?'Free spins triggered.':total>0?'Winning spin.':'No win.';button.disabled=false},250)});
+    render(makeWindow([4,11,18,25,32]));
+  </script>
+</body>
+</html>

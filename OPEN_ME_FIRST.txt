@@ -1,0 +1,9 @@
+To play Aurora Array on a work computer:
+
+1. Double-click PLAY_AURORA_ARRAY.html.
+2. If Windows asks which application to use, choose Microsoft Edge or Google Chrome.
+3. Scroll to the game and click SPIN.
+
+This offline edition does not need a terminal, local server, installation, administrator access, or network connection.
+
+If your company blocks local HTML files entirely, copy the project to a personal computer or ask IT whether local HTML/JavaScript files are permitted.
