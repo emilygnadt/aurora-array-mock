@@ -1,5 +1,6 @@
 # Aurora Array
 
+Playable link is located in the about section on Github.
 Aurora Array is an original slot math portfolio project. It combines a playable 5×3 game, a shared outcome engine, exact theoretical analysis, deterministic Monte Carlo verification, automated tests, and a concise mathematical case study.
 
 ## Portfolio intent
